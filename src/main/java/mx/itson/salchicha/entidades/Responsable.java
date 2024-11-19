@@ -45,7 +45,7 @@ public class Responsable {
         Responsable r = new Responsable();
         try {
             Connection conexion = Conexion.obtener();
-            String query = "SELECT id_responsable, nombre, puesto FROM responsable WHERE id = ?";
+            String query = "SELECT id, nombre, puesto FROM responsable WHERE id = ?";
             PreparedStatement statement = conexion.prepareStatement(query);
             statement.setInt(1, id);
             

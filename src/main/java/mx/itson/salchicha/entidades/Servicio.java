@@ -20,8 +20,41 @@ import mx.itson.salchicha.persistencia.Conexion;
  */
 public class Servicio {
 
-    public static Servicio getById(int servicioId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    /**
+     * @return the actividades
+     */
+    public Actividad getActividades() {
+        return actividades;
+    }
+
+    /**
+     * @param actividades the actividades to set
+     */
+    public void setActividades(Actividad actividades) {
+        this.actividades = actividades;
+    }
+
+    public static Servicio getById(int id){
+            Servicio s = new Servicio ();
+        try {
+            Connection conexion = Conexion.obtener();
+            
+            String query = "SELECT id, fecha_realizacion, descripcion_problema FROM servicio WHERE id = ?";
+            PreparedStatement statement = conexion.prepareStatement(query);
+            statement.setInt(1, id);
+            
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+ 
+                s.setId(rs.getInt(1));
+                s.setFechaRealizacion(rs.getDate(2));
+                s.setDescripcionProblema(rs.getString(3));
+
+            }
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error " + ex.getMessage());
+        }
+        return s;
     }
 
     private int id;
@@ -29,32 +62,38 @@ public class Servicio {
     private Responsable responsable;
     private String descripcionProblema;
     private List<Actividad> actividad;
+    private Actividad actividades;
     
     public static List<Servicio> getAll(){
-        List<Servicio> servicios = new ArrayList<>();
+                List<Servicio> servicios = new ArrayList<>();
         try {
             Connection conexion = Conexion.obtener();
             Statement statement = conexion.createStatement();
-            ResultSet rs = statement.executeQuery("Select id, fecha_realizacion, id_responsable,descripcion_problema FROM servicio");
-            while(rs.next()){
-                Servicio s = new Servicio();
+            ResultSet rs = statement.executeQuery("SELECT id, fecha_realizacion, id_responsable, descripcion_problema FROM servicio");
+            while(rs.next()) {
+                Servicio s = new Servicio ();
                 s.setId(rs.getInt(1));
                 s.setFechaRealizacion(rs.getDate(2));
                 
+                //Obtenemos tipo responsable
                 Responsable r = Responsable.getById(rs.getInt(3));
                 s.setResponsable(r);
+                
                 s.setDescripcionProblema(rs.getString(4));
                 
+                //Obtenemos una lista de tipo Actividad
                 List<Actividad> actividades = Actividad.getList(rs.getInt(1));
                 s.setActividades(actividades);
                 
                 servicios.add(s);
+                
             }
+            
         } catch(Exception ex){
-            System.err.println("Ocurrió     un error2: " + ex.getMessage());
-        }
-        return servicios;
-    }
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        } return servicios; 
+    } 
+    
     
     /**
      * @return the id
@@ -125,46 +164,71 @@ public class Servicio {
     public void setActividades(List<Actividad> actividades) {
         this.actividad = actividades;
     }
-    public static boolean save(String descripcion_problema, String id_responsable){
-        boolean resultado = false;
-        try{
-            Connection conexion = Conexion.obtener();
-            String consulta = "INSERT INTO servicio (descripcion_problema, id_responsable, fecha_realizacion) VALUES (?, ?, ?)";
-            PreparedStatement statement = conexion.prepareStatement(consulta);
-            statement.setString(1, descripcion_problema);
-            statement.setString(2, id_responsable);
-            
-            //Hora real
-            LocalDateTime localDate = LocalDateTime.now();
-            statement.setObject(3, localDate);
-            
-            statement.execute();
-            resultado = statement.getUpdateCount() == 1;
-            conexion.close();
-        }catch(Exception ex){
-            System.err.println("Ocurrió un error: " + ex.getMessage());
-        }
-        return resultado;
-        
-        
-    }
-    public static boolean edit(int id, String descripcion_problema, String id_responsable){
-        boolean resultado = false;
-        try{
-            Connection conexion = Conexion.obtener();
-            String consulta = "UPDATE servicio SET descripcion_problema = ?, id_responsable = ? WHERE id = ?";
-            PreparedStatement statement = conexion.prepareStatement(consulta);
-            statement.setString(1, descripcion_problema);
-            statement.setString(2, id_responsable);
-            statement.execute();
-            resultado = statement.getUpdateCount() == 1;
-            conexion.close();
-        }catch(Exception ex){
-            System.err.println("Ocurrió un error: " + ex.getMessage());
-        }
-        return resultado;
-    }
     
+    
+public static boolean save(String descripcionProblema, int idResponsable) {
+    boolean resultado = false;
+    try {
+        // Establecer conexión con la base de datos
+        Connection conexion = Conexion.obtener();
+        
+        // Consulta SQL para insertar el servicio
+        String consulta = "INSERT INTO servicio (descripcion_problema, id_responsable, fecha_realizacion) VALUES (?, ?, ?)";
+        PreparedStatement statement = conexion.prepareStatement(consulta);
+        
+        // Asignar valores a los parámetros de la consulta
+        statement.setString(1, descripcionProblema);
+        statement.setInt(2, idResponsable); // Cambiado a setInt porque idResponsable es un entero
+        
+        // Hora actual como fecha de realización
+        LocalDateTime fechaActual = LocalDateTime.now();
+        statement.setObject(3, fechaActual);
+        
+        // Ejecutar la consulta
+        statement.execute();
+        resultado = statement.getUpdateCount() == 1;
+        
+        // Cerrar la conexión
+        conexion.close();
+    } catch (Exception ex) {
+        // Manejo de errores
+        System.err.println("Ocurrió un error: " + ex.getMessage());
+    }
+    return resultado;
+}
+
+    
+    
+    
+    
+    public static boolean edit(int idServicio, String descripcionProblema, int idResponsable) {
+    boolean resultado = false;
+    try {
+        // Establecer conexión con la base de datos
+        Connection conexion = Conexion.obtener();
+
+        // Consulta SQL para actualizar un registro en la tabla servicio
+        String consulta = "UPDATE servicio SET descripcion_problema = ?, id_responsable = ? WHERE id = ?";
+        PreparedStatement statement = conexion.prepareStatement(consulta);
+
+        // Asignar valores a los parámetros de la consulta
+        statement.setString(1, descripcionProblema);
+        statement.setInt(2, idResponsable); // Asignar el ID del responsable
+        statement.setInt(3, idServicio); // Asignar el ID del servicio a actualizar
+
+        // Ejecutar la consulta
+        statement.execute();
+        resultado = statement.getUpdateCount() == 1;
+
+        // Cerrar la conexión
+        conexion.close();
+    } catch (Exception ex) {
+        // Manejo de errores
+        System.err.println("Ocurrió un error: " + ex.getMessage());
+    }
+    return resultado;
+}
+
     public static boolean delete(int id){
         boolean resultado = false;
         try{

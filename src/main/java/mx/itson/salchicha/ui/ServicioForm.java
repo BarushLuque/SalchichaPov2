@@ -137,19 +137,34 @@ public class ServicioForm extends javax.swing.JDialog {
 
     private void btnAggServActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAggServActionPerformed
         // TODO add your handling code here:
-        String nombre = txtService.getText();
-        String puesto = cmbResponsables.getName();
-        
-        boolean resultado = this.id == 0 ?
-                    Servicio.save(nombre, puesto) :
-                    Servicio.edit(id, nombre, puesto);
-        if(resultado){
-            JOptionPane.showMessageDialog(this, "El nuevo servicio se guardó correctamente", "Servicio guardado", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
-        }else{
-            JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar guardar el Servicio", "Error al guardar", JOptionPane.ERROR_MESSAGE);
-        }
-        
+        String descripcionProblema = txtService.getText().trim();
+    if (descripcionProblema.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Debe ingresar una descripción para el servicio.", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Validar que se haya seleccionado un responsable
+    Responsable selResponsable = (Responsable) cmbResponsables.getSelectedItem();
+    if (selResponsable == null) {
+        JOptionPane.showMessageDialog(this, "Debe seleccionar un responsable.", "Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // Obtener el ID del responsable
+    int idResponsable = selResponsable.getId();
+
+    // Guardar o editar el servicio
+    boolean resultado = this.id == 0 
+            ? Servicio.save(descripcionProblema, idResponsable) 
+            : Servicio.edit(id, descripcionProblema, idResponsable);
+
+    // Mostrar mensaje de resultado
+    if (resultado) {
+        JOptionPane.showMessageDialog(this, "El nuevo servicio se guardó correctamente", "Servicio guardado", JOptionPane.INFORMATION_MESSAGE);
+        dispose();
+    } else {
+        JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar guardar el servicio.", "Error al guardar", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnAggServActionPerformed
 
     /**

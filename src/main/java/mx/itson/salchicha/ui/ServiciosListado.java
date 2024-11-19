@@ -63,13 +63,13 @@ public class ServiciosListado extends javax.swing.JFrame {
 
         tblServicios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "id", "Responsable", "Descripcion", "Fecha"
+                "id", "Responsable", "Descripcion", "Fecha", "Numero Actividades"
             }
         ));
         jScrollPane1.setViewportView(tblServicios);
@@ -266,8 +266,8 @@ public class ServiciosListado extends javax.swing.JFrame {
                 s.getId(),
                 s.getResponsable().getNombre(),
                 s.getDescripcionProblema(),
-   
-                convertirDate(s.getFechaRealizacion())
+                convertirDate(s.getFechaRealizacion()),
+                s.getActividad().size()
             });
         }
     }

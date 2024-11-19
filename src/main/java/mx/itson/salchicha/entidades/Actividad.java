@@ -23,11 +23,25 @@ import mx.itson.salchicha.persistencia.Conexion;
  */
 public class Actividad {
 
+    /**
+     * @return the servicio
+     */
+    public Servicio getServicio() {
+        return servicio;
+    }
+
+    /**
+     * @param servicio the servicio to set
+     */
+    public void setServicio(Servicio servicio) {
+        this.servicio = servicio;
+    }
+
     // Atributos de la clase Actividad
     private int id; // Identificador único de la actividad en la base de datos
     private int orden; // Orden secuencial de la actividad dentro de un servicio
     private String descripcion; // Descripción detallada de la actividad
-
+    private Servicio servicio;
     /**
      * Obtiene una lista de actividades asociadas a un servicio específico.
      * Realiza una consulta en la base de datos y filtra las actividades que coinciden con el id del servicio.
