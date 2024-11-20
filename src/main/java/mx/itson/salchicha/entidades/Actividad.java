@@ -13,35 +13,41 @@ import java.util.List;
 import mx.itson.salchicha.persistencia.Conexion;
 
 /**
- *
- * @author Barush and Sveen 
- */
-/**
  * La clase Actividad representa una actividad que se puede asociar a un servicio en el sistema.
- * Proporciona métodos para obtener actividades de la base de datos,
- * ya sea todas las actividades o solo aquellas asociadas a un servicio específico.
+ * Proporciona métodos para obtener, eliminar, editar, guardar y consultar actividades 
+ * desde la base de datos.
+ * 
+ * Contiene atributos como ID, orden, descripción y el servicio asociado.
+ * También incluye métodos de acceso (getters y setters) para cada atributo.
+ * 
+ * @author Barush
  */
 public class Actividad {
 
+    // Atributos de la clase Actividad
+    private int id; // Identificador único de la actividad en la base de datos
+    private int orden; // Orden secuencial de la actividad dentro de un servicio
+    private String descripcion; // Descripción detallada de la actividad
+    private Servicio servicio; // Servicio asociado a la actividad
+
     /**
-     * @return the servicio
+     * Obtiene el servicio asociado a la actividad.
+     * 
+     * @return El objeto Servicio asociado a la actividad.
      */
     public Servicio getServicio() {
         return servicio;
     }
 
     /**
-     * @param servicio the servicio to set
+     * Asocia un servicio a la actividad.
+     * 
+     * @param servicio El objeto Servicio que se desea asociar a la actividad.
      */
     public void setServicio(Servicio servicio) {
         this.servicio = servicio;
     }
 
-    // Atributos de la clase Actividad
-    private int id; // Identificador único de la actividad en la base de datos
-    private int orden; // Orden secuencial de la actividad dentro de un servicio
-    private String descripcion; // Descripción detallada de la actividad
-    private Servicio servicio;
     /**
      * Obtiene una lista de actividades asociadas a un servicio específico.
      * Realiza una consulta en la base de datos y filtra las actividades que coinciden con el id del servicio.
@@ -50,70 +56,147 @@ public class Actividad {
      * @return Una lista de objetos Actividad asociados al servicio especificado. Si ocurre un error, devuelve una lista vacía.
      */
     public static List<Actividad> getList(int idServicio) {
-        List<Actividad> actividades = new ArrayList<>(); // Lista para almacenar las actividades obtenidas
+        List<Actividad> actividades = new ArrayList<>();
         try {
-            // Establece conexión con la base de datos
             Connection conexion = Conexion.obtener();
-
-            // Consulta SQL que obtiene las actividades filtradas por id de servicio
-            String consulta = "SELECT * FROM actividad WHERE id_servicio = ?";
+            String consulta = "SELECT id, orden, descripcion FROM actividad WHERE id_servicio = ?";
             PreparedStatement statement = conexion.prepareStatement(consulta);
-
-            // Asigna el idServicio al parámetro de la consulta
             statement.setInt(1, idServicio);
-
-            // Ejecuta la consulta y obtiene los resultados
             ResultSet rs = statement.executeQuery();
-
-            // Procesa cada resultado obtenido de la consulta
             while (rs.next()) {
-                // Crea una nueva instancia de Actividad y asigna los valores obtenidos de la base de datos
                 Actividad a = new Actividad();
-                a.setId(rs.getInt(1)); // Establece el ID de la actividad
-                a.setOrden(rs.getInt(2)); // Establece el orden de la actividad
-                a.setDescripcion(rs.getString(3)); // Establece la descripción de la actividad
-                actividades.add(a); // Agrega la actividad a la lista de actividades
+                a.setId(rs.getInt(1));
+                a.setOrden(rs.getInt(2));
+                a.setDescripcion(rs.getString(3));
+                actividades.add(a);
             }
         } catch (Exception ex) {
-            // Captura cualquier excepción y muestra un mensaje de error en la consola
-            System.err.println("Ocurrió un error al obtener la lista de actividades: " + ex.getMessage());
+            System.err.println("Ocurrió un error: " + ex.getMessage());
         }
-        return actividades; // Retorna la lista de actividades (vacía si ocurrió algún error)
+        return actividades;
     }
 
     /**
-     * Obtiene todas las actividades registradas en la base de datos sin importar el servicio al que pertenezcan.
+     * Elimina una actividad de la base de datos según su ID.
      * 
-     * @return Una lista con todas las actividades en la base de datos. Si ocurre un error, devuelve una lista vacía.
+     * @param id Identificador único de la actividad que se desea eliminar.
+     * @return `true` si la operación fue exitosa; `false` en caso contrario.
      */
-    public static List<Actividad> getAll() {
-        List<Actividad> actividad = new ArrayList<>(); // Lista para almacenar todas las actividades
+    public static boolean delete(int id) {
+        boolean resultado = false;
         try {
-            // Establece conexión con la base de datos
             Connection conexion = Conexion.obtener();
+            String consulta = "DELETE FROM actividad WHERE id = ?";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setInt(1, id);
+            statement.execute();
+            resultado = statement.getUpdateCount() == 1;
+            conexion.close();
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return resultado;
+    }
 
-            // Consulta SQL que obtiene todas las actividades sin filtrar por servicio
-            Statement statement = conexion.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT id, orden, descripcion FROM actividad");
+    /**
+     * Edita los datos de una actividad en la base de datos.
+     * 
+     * @param orden Nuevo orden de la actividad.
+     * @param descripcion Nueva descripción de la actividad.
+     * @param id Identificador único de la actividad que se desea editar.
+     * @return `true` si la operación fue exitosa; `false` en caso contrario.
+     */
+    public static boolean edit(int orden, String descripcion, int id) {
+        boolean resultado = false;
+        try {
+            Connection conexion = Conexion.obtener();
+            String consulta = "UPDATE actividad SET orden = ?, descripcion = ? WHERE id = ?";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setInt(1, orden);
+            statement.setString(2, descripcion);
+            statement.setInt(3, id);
+            statement.execute();
+            resultado = statement.getUpdateCount() == 1;
+            conexion.close();
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return resultado;
+    }
 
-            // Procesa cada resultado obtenido de la consulta
+    /**
+     * Guarda una nueva actividad en la base de datos.
+     * 
+     * @param orden Orden de la actividad dentro del servicio.
+     * @param descripcion Descripción de la actividad.
+     * @return `true` si la operación fue exitosa; `false` en caso contrario.
+     */
+    public static boolean save(int orden, String descripcion) {
+        boolean resultado = false;
+        try {
+            Connection conexion = Conexion.obtener();
+            String consulta = "INSERT INTO actividad (orden, descripcion) VALUES(?, ?)";
+            PreparedStatement statement = conexion.prepareStatement(consulta);
+            statement.setInt(1, orden);
+            statement.setString(2, descripcion);
+            statement.execute();
+            resultado = statement.getUpdateCount() == 1;
+            conexion.close();
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return resultado;
+    }
+
+    /**
+     * Obtiene una actividad específica por su ID.
+     * 
+     * @param id Identificador único de la actividad.
+     * @return Un objeto Actividad si se encuentra; de lo contrario, una actividad vacía.
+     */
+    public static Actividad getById(int id) {
+        Actividad a = new Actividad();
+        try {
+            Connection conexion = Conexion.obtener();
+            String query = "SELECT id, orden, descripcion FROM actividad WHERE id = ?";
+            PreparedStatement statement = conexion.prepareStatement(query);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
             while (rs.next()) {
-                // Crea una nueva instancia de Actividad y asigna los valores obtenidos de la base de datos
-                Actividad a = new Actividad();
-                a.setId(rs.getInt(1)); // Establece el ID de la actividad
-                a.setOrden(rs.getInt(2)); // Establece el orden de la actividad
-                a.setDescripcion(rs.getString(3)); // Establece la descripción de la actividad
-                
-                // Opcional: obtiene una lista de actividades específicas para el ID actual (puede ser redundante)
-                List<Actividad> actividades = Actividad.getList(rs.getInt(1));
-                
-                actividad.add(a); // Agrega la actividad a la lista de todas las actividades
+                a.setId(rs.getInt(1));
+                a.setOrden(rs.getInt(2));
+                a.setDescripcion(rs.getString(3));
             }
         } catch (Exception ex) {
-            // Captura cualquier excepción y muestra un mensaje de error en la consola
-            System.err.println("Ocurrió un error al obtener todas las actividades: " + ex.getMessage());
+            System.err.println("Ocurrió un error: " + ex.getMessage());
         }
-        return actividad; // Retorna la lista de todas las actividades (vacía si ocurrió algún error)
+        return a;
+    }
+
+    /**
+     * Obtiene todas las actividades almacenadas en la base de datos.
+     * 
+     * @return Una lista con todas las actividades.
+     */
+    public static List<Actividad> getAll() {
+        List<Actividad> actividades = new ArrayList<>();
+        try {
+            Connection conexion = Conexion.obtener();
+            Statement statement = conexion.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT id, orden, descripcion, id_servicio FROM actividad");
+            while (rs.next()) {
+                Actividad a = new Actividad();
+                a.setId(rs.getInt(1));
+                a.setOrden(rs.getInt(2));
+                a.setDescripcion(rs.getString(3));
+                Servicio s = Servicio.getById(rs.getInt(4));
+                a.setServicio(s);
+                actividades.add(a);
+            }
+        } catch (Exception ex) {
+            System.err.println("Ocurrió un error: " + ex.getMessage());
+        }
+        return actividades;
     }
 
     // Métodos de acceso (getters y setters) para los atributos de la clase

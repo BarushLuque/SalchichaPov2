@@ -16,7 +16,7 @@ import mx.itson.salchicha.entidades.Servicio;
  */
 public class ServicioForm extends javax.swing.JDialog {
 
-    int id = 0;
+    int id;
    
     /**
      * Creates new form ServicioForm
@@ -28,11 +28,10 @@ public class ServicioForm extends javax.swing.JDialog {
             cargarResponsables();
         });
        thread.start();
+       this.id=id;
     }
 
-    ServicioForm(ServiciosListado aThis, boolean par, Servicio sR) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
     
     public void cargarResponsables(){
         List<Responsable> responsables = Responsable.getAll();
@@ -80,7 +79,7 @@ public class ServicioForm extends javax.swing.JDialog {
         jLabel3.setFont(new java.awt.Font("sansserif", 1, 18)); // NOI18N
         jLabel3.setText("Responsable");
 
-        btnAggServ.setText("Agregar");
+        btnAggServ.setText("Aceptar");
         btnAggServ.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAggServActionPerformed(evt);
@@ -137,34 +136,24 @@ public class ServicioForm extends javax.swing.JDialog {
 
     private void btnAggServActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAggServActionPerformed
         // TODO add your handling code here:
-        String descripcionProblema = txtService.getText().trim();
-    if (descripcionProblema.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe ingresar una descripción para el servicio.", "Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Validar que se haya seleccionado un responsable
+     String descripcionProblema = txtService.getText();
     Responsable selResponsable = (Responsable) cmbResponsables.getSelectedItem();
-    if (selResponsable == null) {
-        JOptionPane.showMessageDialog(this, "Debe seleccionar un responsable.", "Error", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Obtener el ID del responsable
     int idResponsable = selResponsable.getId();
 
-    // Guardar o editar el servicio
-    boolean resultado = this.id == 0 
-            ? Servicio.save(descripcionProblema, idResponsable) 
-            : Servicio.edit(id, descripcionProblema, idResponsable);
+    // Validar si el ID está configurado correctamente
+    boolean resultado = (this.id != 0) 
+        ? Servicio.edit(this.id, descripcionProblema, idResponsable) // Editar
+        : Servicio.save(descripcionProblema, idResponsable); // Agregar
 
-    // Mostrar mensaje de resultado
+    // Mostrar mensajes según el resultado
     if (resultado) {
-        JOptionPane.showMessageDialog(this, "El nuevo servicio se guardó correctamente", "Servicio guardado", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("ID recibido para editar: " + this.id);
+        JOptionPane.showMessageDialog(this, "El servicio fue guardado correctamente", "Operación exitosa", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     } else {
-        JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar guardar el servicio.", "Error al guardar", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Ocurrió un error al intentar guardar el servicio", "Error", JOptionPane.ERROR_MESSAGE);
     }
+
     }//GEN-LAST:event_btnAggServActionPerformed
 
     /**

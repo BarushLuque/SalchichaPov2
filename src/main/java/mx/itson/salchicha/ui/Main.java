@@ -9,7 +9,7 @@ import mx.itson.salchicha.entidades.Servicio;
 
 /**
  *
- * @author Barush and Sveen 
+ * @author Barush
  */
 public class Main {
     

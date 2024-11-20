@@ -160,8 +160,13 @@ public class ServiciosListado extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
     
-        editar Editar = new editar();
-        Editar.setVisible(true);
+        int renglon = tblServicios.getSelectedRow();
+        int idServicio = Integer.parseInt(tblServicios.getModel().getValueAt(renglon, 0).toString());
+        
+        ServicioForm form = new ServicioForm(this, true, idServicio);
+         form.setVisible(true);
+        
+        cargarTableServicios();
   
     /* Obtiene el índice de la fila seleccionada en la tabla de servicios
     int selectedRow = tblServicios.getSelectedRow();
@@ -244,10 +249,11 @@ public class ServiciosListado extends javax.swing.JFrame {
 
     private void btnActividadesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActividadesActionPerformed
 
-       ActividadFrame frame = new ActividadFrame(Actividad.getAll());
-            frame.setVisible(true);
-    //ActividadFrame Actividad = new ActividadFrame();
-       // Actividad.setVisible(true);       // TODO add your handling code here:
+       int renglon = tblServicios.getSelectedRow();
+        int idServicio = Integer.parseInt(tblServicios.getModel().getValueAt(renglon, 0).toString());
+        
+        ActividadListado actividadListado = new ActividadListado();
+        actividadListado.setVisible(true);
     }//GEN-LAST:event_btnActividadesActionPerformed
    
     public static String convertirDate (Date date){

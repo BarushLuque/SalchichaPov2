@@ -9,10 +9,13 @@ import java.sql.DriverManager;
 
 /**
  *
- * @author Barush and Sveen 
+ * @author Barush 
  */
 public class Conexion {
-    
+    /**
+     * Este metodo conecta la base datos hacia el programa
+     * @return La conexion jdbc de mysql
+     */
     public static Connection obtener(){
         Connection conexion = null;
         try {

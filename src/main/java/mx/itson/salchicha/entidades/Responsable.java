@@ -13,15 +13,23 @@ import java.util.List;
 import mx.itson.salchicha.persistencia.Conexion;
 
 /**
- *
- * @author Barush and Sveen 
+ * Clase Responsable que representa un registro de la tabla "responsable" en la base de datos.
+ * Contiene métodos para realizar operaciones CRUD en la tabla.
+ * 
+ * @author Barush and Sveen
  */
 public class Responsable {
 
-    private int id;
-    private String nombre;
-    private String puesto;
+    // Atributos que representan las columnas en la tabla "responsable".
+    private int id;       // Identificador único del responsable
+    private String nombre; // Nombre del responsable
+    private String puesto; // Puesto del responsable
     
+    /**
+     * Obtiene una lista de todos los registros de la tabla "responsable".
+     * 
+     * @return Una lista de objetos de tipo Responsable.
+     */
     public static List<Responsable> getAll(){
         List<Responsable> responsables = new ArrayList<>();
         try {
@@ -41,6 +49,12 @@ public class Responsable {
         return responsables;
     }
     
+    /**
+     * Obtiene un registro de la tabla "responsable" por su ID.
+     * 
+     * @param id Identificador único del responsable.
+     * @return Un objeto de tipo Responsable con los datos del registro.
+     */
     public static Responsable getById(int id){
         Responsable r = new Responsable();
         try {
@@ -56,16 +70,17 @@ public class Responsable {
                 r.setPuesto(rs.getString(3));
             }
         } catch(Exception ex){
-            System.err.println("Ocurrió un error3: " + ex.getMessage());
+            System.err.println("Ocurrió un error: " + ex.getMessage());
         }
         return r;
     }
     
     /**
-     * Guarda un registro de responsable en la base de datos.
-     * @param nombre Valor del nombre del responsable.
-     * @param puesto Valor del puesto del responsable.
-     * @return true si se guardó exitosamente; de lo contrario, false.
+     * Inserta un nuevo registro en la tabla "responsable".
+     * 
+     * @param nombre Nombre del responsable.
+     * @param puesto Puesto del responsable.
+     * @return true si la inserción fue exitosa; false en caso contrario.
      */
     public static boolean save(String nombre, String puesto){
         boolean resultado = false;
@@ -85,7 +100,15 @@ public class Responsable {
         return resultado;
     }
     
-        public static boolean edit(int id, String nombre, String puesto){
+    /**
+     * Actualiza un registro existente en la tabla "responsable".
+     * 
+     * @param id ID del registro a actualizar.
+     * @param nombre Nuevo valor para el nombre.
+     * @param puesto Nuevo valor para el puesto.
+     * @return true si la actualización fue exitosa; false en caso contrario.
+     */
+    public static boolean edit(int id, String nombre, String puesto){
         boolean resultado = false;
         try{
             Connection conexion = Conexion.obtener();
@@ -104,7 +127,13 @@ public class Responsable {
         return resultado;
     }
      
-         public static boolean delete(int id){
+    /**
+     * Elimina un registro de la tabla "responsable" basado en su ID.
+     * 
+     * @param id ID del registro a eliminar.
+     * @return true si la eliminación fue exitosa; false en caso contrario.
+     */
+    public static boolean delete(int id){
         boolean resultado = false;
         try{
             Connection conexion = Conexion.obtener();
@@ -121,51 +150,39 @@ public class Responsable {
         return resultado;
     }
          
-    /**
-     * @return the id
-     */
+    // Métodos getters y setters para los atributos.
+    
     public int getId() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
     public void setId(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the nombre
-     */
     public String getNombre() {
         return nombre;
     }
 
-    /**
-     * @param nombre the nombre to set
-     */
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    /**
-     * @return the puesto
-     */
     public String getPuesto() {
         return puesto;
     }
 
-    /**
-     * @param puesto the puesto to set
-     */
     public void setPuesto(String puesto) {
         this.puesto = puesto;
     }
     
- @Override
- public String toString(){
-     return this.nombre;
- }
-    
+    /**
+     * Representa el objeto Responsable en formato de texto.
+     * 
+     * @return Una cadena con el nombre del responsable.
+     */
+    @Override
+    public String toString(){
+        return this.nombre;
+    }
 }
